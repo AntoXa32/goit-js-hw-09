@@ -1,10 +1,16 @@
-let formData = {
-  email: '',
-  message: '',
-};
-
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('.feedback-form');
+  const formData = JSON.parse(localStorage.getItem('feedback-form-state')) || {
+    email: '',
+    message: '',
+  };
+
+  function updateFormData() {
+    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+  }
+
+  form.querySelector("input[name='email']").value = formData.email;
+  form.querySelector("textarea[name='message']").value = formData.message;
 
   form.addEventListener('input', function (event) {
     if (event.target.matches("input[name='email']")) {
@@ -13,30 +19,16 @@ document.addEventListener('DOMContentLoaded', function () {
       formData.message = event.target.value;
     }
 
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+    updateFormData();
   });
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('.feedback-form');
-
-  const savedFormData = JSON.parse(localStorage.getItem('feedback-form-state'));
-
-  if (savedFormData) {
-    form.querySelector("input[name='email']").value = savedFormData.email;
-    form.querySelector("textarea[name='message']").value =
-      savedFormData.message;
-  }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('.feedback-form');
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
-
-    if (!formData.email || !formData.message) {
-      alert('Fill please all fields');
+    if (
+      !form.querySelector("input[name='email']").value ||
+      !form.querySelector("textarea[name='message']").value
+    ) {
+      alert('Please fill all fields');
       return;
     }
 
@@ -44,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     localStorage.removeItem('feedback-form-state');
 
+    form.reset();
     formData.email = '';
     formData.message = '';
-
-    form.reset();
+    updateFormData();
   });
 });
